@@ -1,13 +1,20 @@
+//jshint esversion 6
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from "dotenv";
+import path from 'path';
+import bodyParser from 'body-parser';
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+import userModel from './model/users.js';
+var router = express.Router();
+var user = userModel.find({});
 
+const __dirname = path.dirname(__filename);
 const app = express();
 dotenv.config();
-app.get('/',function(req, res){
-res.send('I am Afraz')
-})
 
+app.use(bodyParser.urlencoded({extended:true}))
 
 const connect = async () => {
   try {
@@ -27,8 +34,8 @@ mongoose.connection.on("connected", () => {
 });
 
 app.get("/",function(req,res){
-
-    res.send("Hello World");
+    
+  res.sendFile(__dirname+"/public.html");
   
    
   
@@ -36,8 +43,13 @@ app.get("/",function(req,res){
   
   app.post("/",function(req,res){
   
-    res.send("Hello World");
-  
+   var user = new userModel({
+    name: req.body.uname
+     });
+
+    user.save();
+    
+    res.send("<h1>Your username '"+req.body.uname+"' has been stored in the DB. </h1>")
    
   
   })
